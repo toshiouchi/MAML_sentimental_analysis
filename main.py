@@ -48,7 +48,7 @@ def main():
     point2 = len(reviews) * 4 // 5
     
     trainset = reviews[:point1]
-    valset = reviews[point:point2]
+    valset = reviews[point1:point2]
     
     print( "len of trainset:", len( trainset ) )
     print( "len of valset:", len( valset ) )
