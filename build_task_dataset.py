@@ -22,12 +22,15 @@ def random_seed(value):
 
 # list からランダムに kosuu の数値をとってきて list を作る。
 def select( list, kosuu ):
-    while True:
-        idx = torch.randint( 0, len(list), (kosuu,))
-        if kosuu == len( torch.unique(idx)):
-            break
-    #print( "idx:", idx )
-    return list[idx]
+    output = random.sample( list.tolist(), kosuu )
+    return output
+#def select( list, kosuu ):
+#    while True:
+#        idx = torch.randint( 0, len(list), (kosuu,))
+#        if kosuu == len( torch.unique(idx)):
+#            break
+#    #print( "idx:", idx )
+#    return list[idx]
 
 # ( outer_batch の次元のある)taskset から outer_batch_size の outer_batch データを作る。    
 def create_batch_of_tasks(taskset, is_shuffle = True, outer_batch_size = 4):
@@ -45,7 +48,7 @@ def create_batch_of_tasks(taskset, is_shuffle = True, outer_batch_size = 4):
 
 # [num_task, inner_batch, num_class * k, max_seq] テキストを tokenizer でエンコードしたタスクデータ
 # [num_task, inter_batch, num_class * k ]　ラベルタスクデータを作る。
-def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, num_class, inner_batch ):
+def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, num_class, inner_batch, is_val = False ):
     
     #画像データとラベルデータをシャフル    
     max_seq = 128
@@ -87,7 +90,10 @@ def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, nu
     exam_query3_label = []
     for b in range(num_task):  # タスクのループ
         # タスクは 0 ～ 21 の22個のうちランダムに選択
-        current_task_support = torch.randint( 0, num_all_class, size=(1,))
+        if is_val == False:
+            current_task_support = torch.randint( 0, num_all_class - 3, size=(1,))
+        else:
+            current_task_support = torch.randint( num_all_class - 3, num_all_class, size=(1,))
         #current_task_query = torch.randint( 0, num_all_class, size=(1,))
         # support データセットと query データセットのタスクは同じで良いようです。
         current_task_query = current_task_support

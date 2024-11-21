@@ -64,12 +64,12 @@ def main():
 
     print( "epochs:", epochs )
 
-    outer_batch0 = 5 # 実際の outer_batch 数より大きめの値を設定しておく。
+    outer_batch0 = 2 # 実際の outer_batch 数より大きめの値を設定しておく。
 
     ob_val = []
     # validation 用の taskset を作り outer_batch の次元を加える。
     for i in range( outer_batch0 ):
-        val = build_task_dataset( valset, num_all_class = num_all_class, num_task = num_task, k_support=10, k_query=10, num_class = num_class, inner_batch = 1 )
+        val = build_task_dataset( valset, num_all_class = num_all_class, num_task = num_task, k_support=5, k_query=5, num_class = num_class, inner_batch = 1, is_val = True )
         ob_val.append( val )
 
     global_step = 0
@@ -79,11 +79,11 @@ def main():
         ob_train = []
         # 学習用の taskset を作り outer_batch の次元を加える。
         for i in range( outer_batch0 ):
-            train = build_task_dataset(trainset, num_all_class = num_all_class, num_task = num_task, k_support=10, k_query=15, num_class = num_class, inner_batch = 3 )
+            train = build_task_dataset(trainset, num_all_class = num_all_class, num_task = num_task, k_support=5, k_query=5, num_class = num_class, inner_batch = 3, is_val = False )
             ob_train.append( train )
 
         # 学習用データセットを作る。
-        db_train = create_batch_of_tasks( ob_train, is_shuffle = True, outer_batch_size = 3 )
+        db_train = create_batch_of_tasks( ob_train, is_shuffle = True, outer_batch_size = 1 )
 
         for step, train_task in enumerate(db_train):
         
