@@ -24,13 +24,6 @@ def random_seed(value):
 def select( list, kosuu ):
     output = random.sample( list.tolist(), kosuu )
     return output
-#def select( list, kosuu ):
-#    while True:
-#        idx = torch.randint( 0, len(list), (kosuu,))
-#        if kosuu == len( torch.unique(idx)):
-#            break
-#    #print( "idx:", idx )
-#    return list[idx]
 
 # ( outer_batch の次元のある)taskset から outer_batch_size の outer_batch データを作る。    
 def create_batch_of_tasks(taskset, is_shuffle = True, outer_batch_size = 4):
@@ -46,8 +39,8 @@ def create_batch_of_tasks(taskset, is_shuffle = True, outer_batch_size = 4):
     
     return output 
 
-# [num_task, inner_batch, num_class * k, max_seq] テキストを tokenizer でエンコードしたタスクデータ
-# [num_task, inter_batch, num_class * k ]　ラベルタスクデータを作る。
+# [num_task, num_class * k, max_seq] テキストを tokenizer でエンコードしたタスクデータ
+# [num_task, num_class * k ]　ラベルタスクデータを作る。
 def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, num_class, inner_batch, is_val = False ):
     
     #画像データとラベルデータをシャフル    
@@ -101,39 +94,25 @@ def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, nu
         exam_support2_label = []
         exam_query2_text = []
         exam_query2_label = []
-        for c in range( inner_batch ): # inner_batch のループ
-            exam_support1_text = []
-            exam_support1_label = []
-            exam_query1_text = []
-            exam_query1_label = []
-            for k in range( num_class ): # N-way K-shot のループ N 部分
-                # タスク3 だったら、 ドメインが 3 に等しい添え字を True False で取得。
-                idx_support = domain ==  current_task_support
-                idx_query = domain ==  current_task_query
-                # 0 ～ データ数の数字を生成。
-                idx2 = torch.arange( 0, len(text) , 1 ).long()
-                # 上で True False の添え字を番号添え字に変換
-                idx3_support = idx2[idx_support]
-                idx3_query = idx2[idx_query]
-                # 番号添え字の中からランダムに k_support あるいは k_query 個選ぶ。
-                idx4_support = select( idx3_support, k_support )
-                idx4_query = select( idx3_query, k_query )
-                # 選択したデータを追加。
-                for l in range( k_support ): # suppor データの N-way K-shot のループ k 部分
-                    exam_support1_text.append(text[idx4_support[l]])
-                    exam_support1_label.append( label[idx4_support[l]] )
-                for l in range( k_query ): # query データの N-way K-shot のループ k 部分
-                    exam_query1_text.append(text[idx4_query[l]] )
-                    exam_query1_label.append( label[idx4_query[l]] )
-            exam_support1_text = torch.stack( exam_support1_text, dim = 0 )
-            exam_support1_label = torch.tensor( exam_support1_label )
-            exam_query1_text = torch.stack( exam_query1_text, dim = 0 )
-            exam_query1_label = torch.tensor( exam_query1_label )
-
-            exam_support2_text.append( exam_support1_text )
-            exam_support2_label.append( exam_support1_label )
-            exam_query2_text.append( exam_query1_text )
-            exam_query2_label.append( exam_query1_label )
+        for k in range( num_class ): # N-way K-shot のループ N 部分
+            # タスク3 だったら、 ドメインが 3 に等しい添え字を True False で取得。
+            idx_support = domain ==  current_task_support
+            idx_query = domain ==  current_task_query
+            # 0 ～ データ数の数字を生成。
+            idx2 = torch.arange( 0, len(text) , 1 ).long()
+            # 上で True False の添え字を番号添え字に変換
+            idx3_support = idx2[idx_support]
+            idx3_query = idx2[idx_query]
+            # 番号添え字の中からランダムに k_support あるいは k_query 個選ぶ。
+            idx4_support = select( idx3_support, k_support )
+            idx4_query = select( idx3_query, k_query )
+            # 選択したデータを追加。
+            for l in range( k_support ): # suppor データの N-way K-shot のループ k 部分
+                exam_support2_text.append(text[idx4_support[l]])
+                exam_support2_label.append( label[idx4_support[l]] )
+            for l in range( k_query ): # query データの N-way K-shot のループ k 部分
+                exam_query2_text.append(text[idx4_query[l]] )
+                exam_query2_label.append( label[idx4_query[l]] )
         
         exam_support2_text = torch.stack( exam_support2_text, dim = 0 )
         exam_support2_label = torch.stack( exam_support2_label, dim = 0 )
