@@ -68,7 +68,7 @@ def main():
     ob_val = []
     # validation 用の taskset を作り outer_batch の次元を加える。
     for i in range( outer_batch0 ):
-        val = build_task_dataset( valset, num_all_class = num_all_class, num_task = num_task, k_support=5, k_query=5, num_class = num_class, inner_batch = 1, is_val = True )
+        val = build_task_dataset( valset, num_all_class = num_all_class, num_task = num_task, k_support=5, k_query=5, num_class = num_class,is_val = True )
         ob_val.append( val )
 
     global_step = 0
@@ -78,7 +78,7 @@ def main():
         ob_train = []
         # 学習用の taskset を作り outer_batch の次元を加える。
         for i in range( outer_batch0 ):
-            train = build_task_dataset(trainset, num_all_class = num_all_class, num_task = num_task, k_support=5, k_query=5, num_class = num_class, inner_batch = 3, is_val = False )
+            train = build_task_dataset(trainset, num_all_class = num_all_class, num_task = num_task, k_support=5, k_query=5, num_class = num_class, is_val = False )
             ob_train.append( train )
 
         # 学習用データセットを作る。

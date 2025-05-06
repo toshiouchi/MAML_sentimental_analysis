@@ -41,7 +41,7 @@ def create_batch_of_tasks(taskset, is_shuffle = True, outer_batch_size = 4):
 
 # [num_task, num_class * k, max_seq] テキストを tokenizer でエンコードしたタスクデータ
 # [num_task, num_class * k ]　ラベルタスクデータを作る。
-def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, num_class, inner_batch, is_val = False ):
+def build_task_dataset( dataset, num_all_class, num_task, k_support, k_query, num_class,is_val = False ):
     
     #画像データとラベルデータをシャフル    
     max_seq = 128
